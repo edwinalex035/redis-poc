@@ -22,14 +22,14 @@ public class ParameterController {
   private RedisParamRepository redisParamRepository;
 
 
-  @Cacheable(value = "params", key="#code")
+  @Cacheable(cacheNames = "params", value = "params", key="#code")
   @GetMapping(value = "/{code}")
   public Param getParam(@PathVariable("code") String code) {
     log.info("Getting param with code {}", code);
     return  redisParamRepository.findById(code);
   }
 
-  @CachePut(value = "params", key="#param.code")
+  @CachePut(cacheNames = "params", value = "params", key="#param.code")
   @PostMapping
   public Param setParam(@RequestBody Param param) {
     log.info("Calling setParam with {}", param);
@@ -37,7 +37,7 @@ public class ParameterController {
     return param;
   }
 
-  @CachePut(value = "params", key="#param.code")
+  @CachePut(cacheNames = "params", value = "params", key="#param.code")
   @PutMapping
   public Param putParam(@RequestBody Param param) {
     log.info("Calling setParam with {}", param);
