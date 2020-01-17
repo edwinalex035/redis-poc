@@ -9,8 +9,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 public class CacheConfigurationProperties {
   private long timeoutSeconds = 60;
-  private int redisPort = 6379;
-  private String redisHost = "localhost";
 
   private Map<String, Long> cacheExpirations = new HashMap<>();
 

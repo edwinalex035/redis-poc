@@ -12,8 +12,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 
@@ -28,11 +26,8 @@ public class RedisConfig extends CachingConfigurerSupport {
   }
 
   @Bean
-  public JedisConnectionFactory jedisConnectionFactory(CacheConfigurationProperties properties) {
-    RedisStandaloneConfiguration redisStandaloneConfiguration =
-        new RedisStandaloneConfiguration(properties.getRedisHost(), properties.getRedisPort());
-
-    return new JedisConnectionFactory(redisStandaloneConfiguration);
+  public JedisConnectionFactory jedisConnectionFactory() {
+    return new JedisConnectionFactory();
   }
 
   @Bean
@@ -44,12 +39,7 @@ public class RedisConfig extends CachingConfigurerSupport {
   }
 
   @Bean
-  public RedisCacheConfiguration cacheConfiguration(CacheConfigurationProperties properties) {
-    return createCacheConfiguration(properties.getTimeoutSeconds());
-  }
-
-  @Bean
-  public CacheManager cacheManager(RedisConnectionFactory jedisConnectionFactory, CacheConfigurationProperties properties) {
+  public CacheManager cacheManager(JedisConnectionFactory jedisConnectionFactory, CacheConfigurationProperties properties) {
     Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
 
     for(Entry<String, Long> cacheNameAndTimeout : properties.getCacheExpirations().entrySet()) {
@@ -57,7 +47,6 @@ public class RedisConfig extends CachingConfigurerSupport {
     }
     return RedisCacheManager
         .builder(jedisConnectionFactory)
-        .cacheDefaults(cacheConfiguration(properties))
         .withInitialCacheConfigurations(cacheConfigurations).build();
   }
 }
